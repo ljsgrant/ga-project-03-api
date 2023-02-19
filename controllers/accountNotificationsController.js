@@ -8,8 +8,7 @@ const createNotification = async (
   forUserId,
   fromUserId,
   contentType,
-  contentId,
-  linksToId
+  contentId
 ) => {
   try {
     const newNotification = {
