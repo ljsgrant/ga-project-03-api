@@ -2,7 +2,7 @@
 
 ## Introduction & Deployed Project
 
-TheForum is a full-stack social media application built using the MERN stack. Its functionality is loosely modelled on sites similar to Reddit: users can make posts, edit and delete their posts, comment on posts, reply to comments, and view other users’ profile pages. The app has secure registration and login using JSON Web Token, and handles profile pictures via Cloudinary.
+The Forum is a full-stack social media application built using the MERN stack. Its functionality is loosely modelled on sites similar to Reddit: users can make posts, edit and delete their posts, comment on posts, reply to comments, and view other users’ profile pages. The app has secure registration and login using JSON Web Token, and handles profile pictures via Cloudinary.
 
 This was my third module project for the Software Engineering Immersive (SEI) course with General Assembly.
 
