@@ -98,13 +98,13 @@ async function updateComment(req, res, next) {
     }
 
     if (req.body.likeOrDislike) {
-      console.log(comment._id)
       if (req.body.likeOrDislike === 'like') {
         // if user hasn't already liked comment
         if (!user.likedComments || !user.likedComments.includes(comment._id)) {
-          console.log('like')
           await comment.updateOne({ $inc: { likes: 1 } });
-          await user.updateOne({ $push: { likedComments: req.params.commentId } });
+          await user.updateOne({
+            $push: { likedComments: req.params.commentId }
+          });
           // if user has disliked comment previously, remove comment from their dislikes
           if (
             user.dislikedComments &&
@@ -119,7 +119,9 @@ async function updateComment(req, res, next) {
         // if user has already liked comment
         if (user.likedComments && user.likedComments.includes(comment._id)) {
           await comment.updateOne({ $inc: { likes: -1 } });
-          await user.updateOne({ $pull: { likedComments: req.params.commentId } });
+          await user.updateOne({
+            $pull: { likedComments: req.params.commentId }
+          });
         }
       }
       if (req.body.likeOrDislike === 'dislike') {
@@ -129,11 +131,15 @@ async function updateComment(req, res, next) {
           !user.dislikedComments.includes(comment._id)
         ) {
           await comment.updateOne({ $inc: { dislikes: 1 } });
-          await user.updateOne({ $push: { dislikedComments: req.params.commentId } });
+          await user.updateOne({
+            $push: { dislikedComments: req.params.commentId }
+          });
           // if user has liked comment previously, remove comment from their likes
           if (user.likedComments && user.likedComments.includes(comment._id)) {
             await comment.updateOne({ $inc: { likes: -1 } });
-            await user.updateOne({ $pull: { likedComments: req.params.commentId } });
+            await user.updateOne({
+              $pull: { likedComments: req.params.commentId }
+            });
           }
         }
         // if user has already disliked comment
@@ -142,7 +148,9 @@ async function updateComment(req, res, next) {
           user.dislikedComments.includes(comment._id)
         ) {
           await comment.updateOne({ $inc: { dislikes: -1 } });
-          await user.updateOne({ $pull: { dislikedComments: req.params.commentId } });
+          await user.updateOne({
+            $pull: { dislikedComments: req.params.commentId }
+          });
         }
       }
       const updatedComment = await comment.save();
