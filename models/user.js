@@ -27,7 +27,11 @@ const userSchema = new mongoose.Schema(
     comments: [{ type: mongoose.Types.ObjectId, ref: 'Comments' }],
     likedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Posts' }],
     dislikedPosts: [{ type: mongoose.Types.ObjectId, ref: 'Posts' }],
-    accountNotifications: [{ type: mongoose.Types.ObjectId, ref: 'accountNotification' }],
+    likedComments: [{ type: mongoose.Types.ObjectId, ref: 'Posts' }],
+    dislikedComments: [{ type: mongoose.Types.ObjectId, ref: 'Posts' }],
+    accountNotifications: [
+      { type: mongoose.Types.ObjectId, ref: 'accountNotification' }
+    ],
     cloudinaryImageId: { type: String }
   },
   { timestamps: true }

@@ -100,17 +100,69 @@ async function updateComment(req, res, next) {
       return res.status(404).send({ message: 'No comment found' });
     }
 
-    if (!comment.addedBy.equals(req.currentUser._id)) {
-      return res.status(301).send({
-        message: 'Unauthorized: can not update other users comment'
-      });
+    if (req.body.likeOrDislike) {
+      console.log('hello world');
+
+      if (req.body.likeOrDislike === 'like') {
+        // if user hasn't already liked post
+        if (!user.likedComments || !user.likedComments.includes(comment._id)) {
+          await post.updateOne({ $inc: { likes: 1 } });
+          await user.updateOne({ $push: { likedComments: req.params.id } });
+          // if user has disliked post previously, remove post from their dislikes
+          if (
+            user.dislikedComments &&
+            user.dislikedComments.includes(comment._id)
+          ) {
+            await post.updateOne({ $inc: { dislikes: -1 } });
+            await user.updateOne({
+              $pull: { dislikedComments: req.params.id }
+            });
+          }
+        }
+        // if user has already liked post
+        if (user.likedComments && user.likedComments.includes(comment._id)) {
+          await post.updateOne({ $inc: { likes: -1 } });
+          await user.updateOne({ $pull: { likedComments: req.params.id } });
+        }
+      }
+      if (req.body.likeOrDislike === 'dislike') {
+        // if user hasn't already disliked post
+        if (
+          !user.dislikedComments ||
+          !user.dislikedComments.includes(comment._id)
+        ) {
+          await post.updateOne({ $inc: { dislikes: 1 } });
+          await user.updateOne({ $push: { dislikedComments: req.params.id } });
+          // if user has liked post previously, remove post from their likes
+          if (user.likedComments && user.likedComments.includes(comment._id)) {
+            await post.updateOne({ $inc: { likes: -1 } });
+            await user.updateOne({ $pull: { likedComments: req.params.id } });
+          }
+        }
+        // if user has already disliked post
+        if (
+          user.dislikedComments &&
+          user.dislikedComments.includes(comment._id)
+        ) {
+          await post.updateOne({ $inc: { dislikes: -1 } });
+          await user.updateOne({ $pull: { dislikedComments: req.params.id } });
+        }
+      }
+      const updatedPost = await post.save();
+      return res.status(200).json(updatedPost);
+    } else {
+      if (!comment.addedBy.equals(req.currentUser._id)) {
+        return res.status(301).send({
+          message: 'Unauthorized: can not update other users comment'
+        });
+      }
+
+      comment.set(req.body);
+
+      const savedPost = await post.save();
+
+      return res.status(200).json(savedPost);
     }
-
-    comment.set(req.body);
-
-    const savedPost = await post.save();
-
-    return res.status(200).json(savedPost);
   } catch (error) {
     next(error);
   }
